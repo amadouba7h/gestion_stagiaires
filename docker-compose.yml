@@ -1,0 +1,101 @@
+services:
+  # Base de données MySQL
+  mysql-db:
+    image: mysql:8.0
+    container_name: intern-management-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: intern_management_db
+      MYSQL_USER: intern_user
+      MYSQL_PASSWORD: intern_password
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - intern-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Serveur Eureka
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8762:8762"
+    networks:
+      - intern-network
+    # Health check désactivé - utilisation des dépendances uniquement
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "9090:9090"
+    depends_on:
+      eureka-server:
+        condition: service_started
+    networks:
+      - intern-network
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8762/eureka/
+    # Health check désactivé
+
+  # Service Stagiaire
+  stagiaire-service:
+    build:
+      context: ./stagiaire-service
+      dockerfile: Dockerfile
+    container_name: stagiaire-service
+    ports:
+      - "9091:9091"
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    networks:
+      - intern-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/intern_management_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8762/eureka/
+    # Health check désactivé
+
+  # Service Encadreur
+  encadreur-service:
+    build:
+      context: ./encadreur-service
+      dockerfile: Dockerfile
+    container_name: encadreur-service
+    ports:
+      - "9092:9092"
+    depends_on:
+      mysql-db:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    networks:
+      - intern-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/intern_management_db
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=rootpassword
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eureka-server:8762/eureka/
+    # Health check désactivé
+
+volumes:
+  mysql_data:
+
+networks:
+  intern-network:
+    driver: bridge
