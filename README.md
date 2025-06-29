@@ -16,15 +16,14 @@ Projet de fin de module Spring Boot pour la gestion des stagiaires avec une arch
 
 ## Technologies Utilisées
 
-- Spring Boot 3.4.1
-- Spring Cloud 2024.0.1
+- Spring Boot 3.5.3
+- Spring Cloud 2024.0.0
 - Spring Data JPA
 - MySQL 8.0
 - Docker & Docker Compose
 - Swagger/OpenAPI 3
 - Lombok
 - Maven
-- Configuration: application.properties
 
 ## Modèle de Données
 
@@ -157,21 +156,15 @@ Chaque service expose des endpoints Actuator:
 
 ### Tester les APIs avec curl
 
-**Lister tous les encadreurs:**
-
-```bash
-curl http://localhost:9090/encadreur-service/api/encadreurs
-```
-
 **Créer un encadreur:**
 
 ```bash
-curl -X POST http://localhost:9090/encadreur-service/api/encadreurs \
+curl -X POST http://localhost:9090/api/encadreurs \
   -H "Content-Type: application/json" \
   -d '{
-    "nom": "Dupont",
-    "prenom": "Jean",
-    "email": "jean.dupont@technolab.com",
+    "nom": "Nouveau",
+    "prenom": "Encadreur",
+    "email": "nouveau.encadreur@technolab.com",
     "telephone": "0123456789"
   }'
 ```
@@ -179,7 +172,7 @@ curl -X POST http://localhost:9090/encadreur-service/api/encadreurs \
 **Créer un stagiaire:**
 
 ```bash
-curl -X POST http://localhost:9090/stagiaire-service/api/stagiaires \
+curl -X POST http://localhost:9090/api/stagiaires \
   -H "Content-Type: application/json" \
   -d '{
     "nom": "Nouveau",
@@ -203,7 +196,7 @@ docker-compose down -v
 
 ## Structure du Projet
 
-```text
+```bash
 intern_management/
 ├── eureka-server/          # Service de découverte
 ├── api-gateway/            # Passerelle API
@@ -211,46 +204,13 @@ intern_management/
 ├── encadreur-service/      # Service de gestion des encadreurs
 ├── docker-compose.yml      # Configuration Docker Compose
 ├── init-db.sql            # Script d'initialisation DB
-├── start-services.sh       # Script de démarrage
-├── stop-services.sh        # Script d'arrêt
 └── README.md              # Documentation
 ```
 
-## État Actuel du Projet
-
-### ✅ Fonctionnalités Implémentées
-
-- **Architecture Microservices Complète** : Eureka Server, API Gateway, Services métier
-- **Découverte de Services** : Enregistrement automatique via Eureka
-- **API Gateway** : Routage centralisé vers les microservices
-- **APIs REST CRUD** : Opérations complètes pour Stagiaires et Encadreurs
-- **Base de Données** : MySQL avec données de test pré-chargées
-- **Documentation API** : Swagger UI disponible pour chaque service
-- **Conteneurisation** : Docker et Docker Compose opérationnels
-- **Configuration** : Migration vers application.properties
-
-### 📊 Données de Test
-
-- **Encadreurs** : 4 enregistrements disponibles
-- **Stagiaires** : 7 enregistrements disponibles
-- **Relations** : Stagiaires associés à leurs encadreurs
-
-### 🚀 Services Opérationnels
-
-- ✅ Eureka Server : <http://localhost:8762>
-- ✅ API Gateway : <http://localhost:9090>
-- ✅ Stagiaire Service : <http://localhost:9091>
-- ✅ Encadreur Service : <http://localhost:9092>
-- ✅ MySQL Database : localhost:3308
-
-### 📝 Documentation API
-
-- Swagger Stagiaire : <http://localhost:9091/swagger-ui/index.html>
-- Swagger Encadreur : <http://localhost:9092/swagger-ui/index.html>
-
 ## Auteur
 
+Projet réalisé dans le cadre du module Spring Boot - Microservices
+
 **Étudiant** : Amadou BATHILY
-Projet réalisé dans le cadre du module Spring Boot - Microservices  
-**Date limite** : Lundi 30/06/2025 à 23:59  
-**Contact** : <ysalissou@gmail.com>
+**Date limite**: Lundi 30/06/2025 à 23:59  
+**Contact**: <ysalissou@gmail.com>
